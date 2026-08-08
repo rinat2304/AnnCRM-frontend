@@ -207,14 +207,14 @@ function Clients() {
 
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
 
-          <h1 className="text-xl font-bold text-gray-900">
-            CRM System
+          <h1 className="text-xl font-bold text-blue-600">
+            AnnCRM
           </h1>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+            className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
           >
             Выйти
           </button>
@@ -252,7 +252,7 @@ function Clients() {
               setEditingClient(null);
               setError("");
             }}
-            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+            className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
           >
             {showForm
               ? "Отмена"
@@ -365,7 +365,7 @@ function Clients() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
+                  className="cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
                 >
                   Отмена
                 </button>
@@ -373,7 +373,7 @@ function Clients() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {creating
                     ? "Добавление..."
@@ -617,7 +617,7 @@ function Clients() {
                             onClick={() =>
                               handleEditClick(client)
                             }
-                            className="rounded-lg px-3 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+                            className="cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
                           >
                             Изменить
                           </button>
@@ -630,7 +630,7 @@ function Clients() {
                             disabled={
                               deletingId === client.id
                             }
-                            className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             {deletingId === client.id
                               ? "Удаление..."

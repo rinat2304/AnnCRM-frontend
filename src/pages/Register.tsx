@@ -76,8 +76,8 @@ function Register() {
 
         <div className="mb-8 text-center">
 
-          <h1 className="text-2xl font-bold text-gray-900">
-            CRM System
+          <h1 className="text-2xl font-bold text-blue-600">
+            AnnCRM
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
@@ -177,7 +177,7 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading
               ? "Регистрация..."
@@ -194,7 +194,7 @@ function Register() {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="font-medium text-blue-600 hover:text-blue-700"
+            className="cursor-pointer font-medium text-blue-600 hover:text-blue-700"
           >
             Войти
           </button>
