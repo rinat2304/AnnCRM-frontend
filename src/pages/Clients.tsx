@@ -6,6 +6,7 @@ import {
   deleteClient,
   type Client,
 } from "../services/clientService";
+import { useNavigate } from "react-router-dom";
 
 
 function Clients() {
@@ -29,6 +30,8 @@ function Clients() {
 
   // Удаление
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const navigate = useNavigate();
 
 
   // Получение клиентов
@@ -177,6 +180,11 @@ function Clients() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login");
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -193,9 +201,10 @@ function Clients() {
 
           <button
             type="button"
+            onClick={handleLogout}
             className="text-sm font-medium text-gray-600 hover:text-gray-900"
           >
-            Выйти
+          Выйти
           </button>
 
         </div>
