@@ -1,22 +1,47 @@
-# AnnCRM Frontend
+# AnnCRM — CRM System
 
-Frontend часть CRM-системы AnnCRM, разработанная на React и TypeScript.
+**AnnCRM** — full-stack CRM-система для управления клиентами с регистрацией пользователей, JWT-аутентификацией и разграничением доступа к данным.
 
-## Возможности
+Проект разработан с использованием **React + TypeScript** на frontend и **FastAPI + PostgreSQL** на backend.
+
+## 🌐 Demo
+
+**Live Demo:**
+https://anncrm-frontend-repozitorii.onrender.com
+
+> Для работы приложения frontend взаимодействует с production backend API.
+
+## ✨ Возможности
+
+### Авторизация
 
 * Регистрация пользователей
-* Авторизация пользователей
+* Авторизация
 * JWT authentication
-* Защищённые маршруты
-* Управление клиентами
-* Создание клиентов
-* Редактирование клиентов
-* Удаление клиентов
-* Loading и error states
+* Автоматическая передача JWT в API-запросах
 * Logout
-* Адаптивный интерфейс
+* Защищённые маршруты
+* Перенаправление неавторизованных пользователей на страницу входа
 
-## Стек технологий
+### Управление клиентами
+
+* Просмотр списка клиентов
+* Создание клиента
+* Редактирование клиента
+* Удаление клиента
+* Привязка клиентов к пользователю
+* Loading states
+* Error states
+
+### Интерфейс
+
+* Адаптивный интерфейс
+* React Router
+* Обработка состояний загрузки и ошибок
+
+## 🛠 Tech Stack
+
+### Frontend
 
 * React
 * TypeScript
@@ -25,43 +50,122 @@ Frontend часть CRM-системы AnnCRM, разработанная на R
 * Axios
 * Tailwind CSS
 
-## Backend
-
-Frontend работает совместно с backend на FastAPI.
-
-Backend:
+### Backend
 
 * FastAPI
 * SQLAlchemy
-* PostgreSQL
+* Pydantic
 * JWT
+* Alembic
 
-## Запуск проекта
+### Database
 
-### 1. Клонировать проект
+* PostgreSQL
+
+### Deployment
+
+* Render
+* GitHub
+
+## 🏗 Architecture
+
+```text
+┌─────────────────────┐
+│       React         │
+│    TypeScript       │
+│       Vite          │
+└──────────┬──────────┘
+           │ HTTP / REST API
+           │ JWT
+           ▼
+┌─────────────────────┐
+│       FastAPI       │
+│     SQLAlchemy      │
+│        JWT          │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│     PostgreSQL      │
+└─────────────────────┘
+```
+
+Frontend и backend разделены на отдельные приложения и GitHub-репозитории.
+
+## 🔐 Authentication
+
+Для авторизации используется JWT.
+
+После успешного входа access token сохраняется в `localStorage`.
+
+Axios автоматически добавляет токен к API-запросам:
+
+```text
+Authorization: Bearer <JWT>
+```
+
+Защищённые маршруты доступны только авторизованным пользователям.
+
+Например:
+
+```text
+/clients
+```
+
+Если пользователь не авторизован, он перенаправляется на:
+
+```text
+/login
+```
+
+## 🔌 API
+
+Frontend взаимодействует с REST API backend-приложения.
+
+Основные endpoints:
+
+```text
+POST   /auth/register
+POST   /auth/login
+
+GET    /clients
+POST   /clients
+PUT    /clients/{id}
+DELETE /clients/{id}
+```
+
+## 🚀 Запуск проекта
+
+### 1. Клонирование
 
 ```bash
 git clone <repository_url>
-cd crm_frontend
+cd AnnCRM-frontend
 ```
 
-### 2. Установить зависимости
+### 2. Установка зависимостей
 
 ```bash
 npm install
 ```
 
-### 3. Настроить API
+### 3. Настройка API
 
-По умолчанию frontend использует локальный backend:
+Для локальной разработки frontend должен обращаться к локальному FastAPI backend:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-URL backend настраивается в `src/api/axios.ts`.
+Для production используется URL развернутого backend API.
 
-### 4. Запустить проект
+Рекомендуется задавать API URL через environment variable:
+
+```text
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+### 4. Запуск development server
 
 ```bash
 npm run dev
@@ -73,15 +177,27 @@ Frontend будет доступен по адресу:
 http://localhost:5173
 ```
 
-## Основные страницы
+### 5. Production build
+
+```bash
+npm run build
+```
+
+Результат сборки находится в:
+
+```text
+dist/
+```
+
+## 📄 Основные страницы
 
 ### Login
 
-Авторизация существующего пользователя.
+Страница авторизации существующего пользователя.
 
 ### Register
 
-Регистрация нового пользователя с последующим автоматическим входом.
+Регистрация нового пользователя и автоматический вход после успешной регистрации.
 
 ### Clients
 
@@ -93,23 +209,9 @@ http://localhost:5173
 * создание;
 * редактирование;
 * удаление;
-* выход из аккаунта.
+* logout.
 
-## Авторизация
-
-Для авторизации используется JWT.
-
-После успешного входа токен сохраняется в `localStorage`.
-
-Axios автоматически добавляет JWT в запросы:
-
-```text
-Authorization: Bearer <JWT>
-```
-
-Страница `/clients` защищена и доступна только авторизованным пользователям.
-
-## Структура проекта
+## 📁 Структура проекта
 
 ```text
 src/
@@ -139,29 +241,7 @@ src/
 └── main.tsx
 ```
 
-## Backend API
-
-Frontend взаимодействует с backend API:
-
-```text
-POST /auth/register
-POST /auth/login
-
-GET /clients
-POST /clients
-PUT /clients/{id}
-DELETE /clients/{id}
-```
-
-## Live Demo
-
-Будет добавлено после публикации приложения:
-
-```text
-<live_demo_url>
-```
-
-## Backend Repository
+## 🔗 Backend Repository
 
 Backend часть проекта находится в отдельном репозитории:
 
@@ -169,12 +249,73 @@ Backend часть проекта находится в отдельном ре�
 <backend_repository_url>
 ```
 
-## Планы развития
+Backend построен на:
+
+```text
+FastAPI
+SQLAlchemy
+PostgreSQL
+Alembic
+JWT
+Pydantic
+```
+
+## 📸 Screenshots
+
+Добавьте сюда скриншоты интерфейса.
+
+Рекомендуемые скриншоты:
+
+* Login
+* Register
+* Clients
+* Создание клиента
+* Редактирование клиента
+
+## 🔒 Environment Variables
+
+Секретные данные не хранятся в репозитории.
+
+Для production используются environment variables.
+
+Пример:
+
+```text
+VITE_API_URL=https://your-backend-url
+```
+
+Не добавляйте реальные токены, пароли или секретные ключи в GitHub.
+
+## 📌 Project Status
+
+Проект находится в рабочем состоянии.
+
+Реализованы:
+
+* Authentication
+* JWT
+* Protected routes
+* Client CRUD
+* API integration
+* PostgreSQL
+* Alembic migrations
+* Production deployment
+
+## 🔮 Future Improvements
 
 * Поиск клиентов
 * Фильтрация и сортировка
 * Карточка клиента
 * Пагинация
-* Дополнительные CRM-функции
+* Dashboard
+* Статистика
 * Улучшение UX
+* Дополнительные CRM-функции
 
+## 👨‍💻 Author
+
+**Rinat**
+
+GitHub:
+
+https://github.com/rinat2304
