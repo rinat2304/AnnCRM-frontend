@@ -5,13 +5,18 @@ import Register from "../pages/Register";
 import Clients from "../pages/Clients";
 import ProtectedRoute from "../components/ProtectedRoute";
 
-
 function AppRoutes() {
   return (
     <BrowserRouter>
-
       <Routes>
 
+        {/* Главная страница */}
+        <Route
+          path="/"
+          element={<Login />}
+        />
+
+        {/* Авторизация */}
         <Route
           path="/login"
           element={<Login />}
@@ -22,29 +27,23 @@ function AppRoutes() {
           element={<Register />}
         />
 
-
+        {/* Защищённые страницы */}
         <Route element={<ProtectedRoute />}>
-
           <Route
             path="/clients"
             element={<Clients />}
           />
-
         </Route>
 
-
-        {/* Неизвестный адрес → Login */}
-
+        {/* Неизвестный адрес → главная */}
         <Route
           path="*"
-          element={<Navigate to="/login" replace />}
+          element={<Navigate to="/" replace />}
         />
 
       </Routes>
-
     </BrowserRouter>
   );
 }
-
 
 export default AppRoutes;
