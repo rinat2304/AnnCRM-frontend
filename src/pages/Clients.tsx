@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   getClients,
   createClient,
@@ -6,10 +9,11 @@ import {
   deleteClient,
   type Client,
 } from "../services/clientService";
-import { useNavigate } from "react-router-dom";
 
 
 function Clients() {
+  const navigate = useNavigate();
+
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,16 +26,17 @@ function Clients() {
   const [creating, setCreating] = useState(false);
 
   // Редактирование
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [editingClient, setEditingClient] =
+    useState<Client | null>(null);
+
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [updating, setUpdating] = useState(false);
 
   // Удаление
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-
-  const navigate = useNavigate();
+  const [deletingId, setDeletingId] =
+    useState<number | null>(null);
 
 
   // Получение клиентов
@@ -41,10 +46,12 @@ function Clients() {
         const data = await getClients();
 
         setClients(data);
+
       } catch (error) {
         console.error("GET CLIENTS ERROR:", error);
 
         setError("Не удалось загрузить клиентов");
+
       } finally {
         setLoading(false);
       }
@@ -56,7 +63,7 @@ function Clients() {
 
   // Создание клиента
   const handleCreateClient = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -106,7 +113,7 @@ function Clients() {
 
   // Обновление клиента
   const handleUpdateClient = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -149,7 +156,9 @@ function Clients() {
 
 
   // Удаление клиента
-  const handleDeleteClient = async (clientId: number) => {
+  const handleDeleteClient = async (
+    clientId: number
+  ) => {
     const confirmed = window.confirm(
       "Вы действительно хотите удалить этого клиента?"
     );
@@ -180,10 +189,13 @@ function Clients() {
     }
   };
 
+
+  // Выход
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+
     navigate("/login");
-};
+  };
 
 
   return (
@@ -195,16 +207,16 @@ function Clients() {
 
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
 
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-bold text-gray-900">
             CRM System
           </h1>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
           >
-          Выйти
+            Выйти
           </button>
 
         </div>
@@ -214,11 +226,11 @@ function Clients() {
 
       {/* Main */}
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-6xl px-6 py-10">
 
-        {/* Заголовок */}
+        {/* Page heading */}
 
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-8 flex items-end justify-between">
 
           <div>
 
@@ -235,8 +247,12 @@ function Clients() {
 
           <button
             type="button"
-            onClick={() => setShowForm(!showForm)}
-            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+            onClick={() => {
+              setShowForm(!showForm);
+              setEditingClient(null);
+              setError("");
+            }}
+            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
           >
             {showForm
               ? "Отмена"
@@ -246,20 +262,28 @@ function Clients() {
         </div>
 
 
-        {/* Форма создания */}
+        {/* Create form */}
 
         {showForm && (
 
           <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
 
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Новый клиент
-            </h3>
+            <div className="mb-5">
+
+              <h3 className="text-lg font-semibold text-gray-900">
+                Новый клиент
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Заполните данные клиента
+              </p>
+
+            </div>
 
 
             <form
               onSubmit={handleCreateClient}
-              className="space-y-4"
+              className="grid gap-4 md:grid-cols-3"
             >
 
               <div>
@@ -278,7 +302,8 @@ function Clients() {
                   onChange={(event) =>
                     setName(event.target.value)
                   }
-                  placeholder="Введите имя"
+                  placeholder="Иван Иванов"
+                  autoComplete="name"
                   required
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
@@ -303,6 +328,7 @@ function Clients() {
                     setPhone(event.target.value)
                   }
                   placeholder="+7 999 123-45-67"
+                  autoComplete="tel"
                   required
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
@@ -326,19 +352,20 @@ function Clients() {
                   onChange={(event) =>
                     setEmail(event.target.value)
                   }
-                  placeholder="client@example.com"
+                  placeholder="ivan@example.com"
+                  autoComplete="email"
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
 
               </div>
 
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 md:col-span-3">
 
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
                 >
                   Отмена
                 </button>
@@ -362,20 +389,28 @@ function Clients() {
         )}
 
 
-        {/* Форма редактирования */}
+        {/* Edit form */}
 
         {editingClient && (
 
-          <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 rounded-xl border border-blue-100 bg-white p-6 shadow-sm">
 
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Редактирование клиента
-            </h3>
+            <div className="mb-5">
+
+              <h3 className="text-lg font-semibold text-gray-900">
+                Редактирование клиента
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Измените необходимые данные
+              </p>
+
+            </div>
 
 
             <form
               onSubmit={handleUpdateClient}
-              className="space-y-4"
+              className="grid gap-4 md:grid-cols-3"
             >
 
               <div>
@@ -394,6 +429,7 @@ function Clients() {
                   onChange={(event) =>
                     setEditName(event.target.value)
                   }
+                  autoComplete="name"
                   required
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
@@ -417,6 +453,7 @@ function Clients() {
                   onChange={(event) =>
                     setEditPhone(event.target.value)
                   }
+                  autoComplete="tel"
                   required
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
@@ -440,18 +477,19 @@ function Clients() {
                   onChange={(event) =>
                     setEditEmail(event.target.value)
                   }
+                  autoComplete="email"
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
 
               </div>
 
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 md:col-span-3">
 
                 <button
                   type="button"
                   onClick={() => setEditingClient(null)}
-                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                  className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
                 >
                   Отмена
                 </button>
@@ -475,139 +513,167 @@ function Clients() {
         )}
 
 
-        {/* Ошибка */}
+        {/* Error */}
 
         {error && (
 
-          <p className="mb-4 text-sm text-red-600">
+          <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
             {error}
-          </p>
+          </div>
 
         )}
 
 
-        {/* Загрузка */}
+        {/* Loading */}
 
         {loading && (
 
-          <p className="text-sm text-gray-500">
-            Загрузка клиентов...
-          </p>
+          <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center shadow-sm">
+
+            <p className="text-sm text-gray-500">
+              Загрузка клиентов...
+            </p>
+
+          </div>
 
         )}
 
 
-        {/* Таблица */}
+        {/* Clients table */}
 
         {!loading && (
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 
-            <table className="w-full">
+            <div className="border-b border-gray-200 px-6 py-4">
 
-              <thead className="border-b border-gray-200 bg-gray-50">
+              <p className="text-sm font-medium text-gray-900">
+                Список клиентов
+              </p>
 
-                <tr>
+              <p className="mt-1 text-xs text-gray-500">
+                Всего клиентов: {clients.length}
+              </p>
 
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
-                    Имя
-                  </th>
-
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
-                    Телефон
-                  </th>
-
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
-                    Email
-                  </th>
-
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-600">
-                    Действия
-                  </th>
-
-                </tr>
-
-              </thead>
+            </div>
 
 
-              <tbody>
+            <div className="overflow-x-auto">
 
-                {clients.map((client) => (
+              <table className="w-full min-w-[700px]">
 
-                  <tr
-                    key={client.id}
-                    className="border-b border-gray-100"
-                  >
-
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {client.name}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {client.phone}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {client.email || "—"}
-                    </td>
-
-                    <td className="px-6 py-4 text-right">
-
-                      <div className="flex justify-end gap-2">
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleEditClick(client)
-                          }
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50"
-                        >
-                          Изменить
-                        </button>
-
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDeleteClient(client.id)
-                          }
-                          disabled={
-                            deletingId === client.id
-                          }
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deletingId === client.id
-                            ? "Удаление..."
-                            : "Удалить"}
-                        </button>
-
-                      </div>
-
-                    </td>
-
-                  </tr>
-
-                ))}
-
-
-                {clients.length === 0 && (
+                <thead className="border-b border-gray-200 bg-gray-50">
 
                   <tr>
 
-                    <td
-                      colSpan={4}
-                      className="px-6 py-8 text-center text-sm text-gray-500"
-                    >
-                      Клиентов пока нет
-                    </td>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Имя
+                    </th>
+
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Телефон
+                    </th>
+
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Email
+                    </th>
+
+                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Действия
+                    </th>
 
                   </tr>
 
-                )}
+                </thead>
 
-              </tbody>
 
-            </table>
+                <tbody>
+
+                  {clients.map((client) => (
+
+                    <tr
+                      key={client.id}
+                      className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+                    >
+
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {client.name}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {client.phone}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {client.email || "—"}
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+
+                        <div className="flex justify-end gap-2">
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleEditClick(client)
+                            }
+                            className="rounded-lg px-3 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+                          >
+                            Изменить
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteClient(client.id)
+                            }
+                            disabled={
+                              deletingId === client.id
+                            }
+                            className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {deletingId === client.id
+                              ? "Удаление..."
+                              : "Удалить"}
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+
+                  {clients.length === 0 && (
+
+                    <tr>
+
+                      <td
+                        colSpan={4}
+                        className="px-6 py-12 text-center"
+                      >
+
+                        <p className="text-sm font-medium text-gray-900">
+                          Клиентов пока нет
+                        </p>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                          Добавьте первого клиента, чтобы начать работу
+                        </p>
+
+                      </td>
+
+                    </tr>
+
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
 
           </div>
 

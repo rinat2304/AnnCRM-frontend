@@ -1,8 +1,81 @@
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+
+
 function Register() {
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
+  const handleRegister = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      // Регистрация пользователя
+      await api.post("/auth/register", {
+        username,
+        email,
+        password,
+      });
+
+      // Автоматический вход после регистрации
+      const formData = new URLSearchParams();
+
+      formData.append("username", email);
+      formData.append("password", password);
+
+      const loginResponse = await api.post(
+        "/auth/login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      // Сохраняем JWT
+      localStorage.setItem(
+        "access_token",
+        loginResponse.data.access_token
+      );
+
+      // Переходим в CRM
+      navigate("/clients");
+
+    } catch (error) {
+      console.error("REGISTER/LOGIN ERROR:", error);
+
+      setError(
+        "Не удалось завершить регистрацию. Попробуйте еще раз."
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-sm p-8">
-        <div className="text-center mb-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+
+      <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+
+        <div className="mb-8 text-center">
+
           <h1 className="text-2xl font-bold text-gray-900">
             CRM System
           </h1>
@@ -10,13 +83,27 @@ function Register() {
           <p className="mt-2 text-sm text-gray-500">
             Создайте новый аккаунт
           </p>
+
         </div>
 
-        <form className="space-y-5">
+
+        {error && (
+          <div className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
+
+        <form
+          onSubmit={handleRegister}
+          className="space-y-5"
+        >
+
           <div>
+
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Имя пользователя
             </label>
@@ -24,15 +111,24 @@ function Register() {
             <input
               id="username"
               type="text"
+              value={username}
+              onChange={(event) =>
+                setUsername(event.target.value)
+              }
               placeholder="Введите имя"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              autoComplete="username"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
+
           </div>
 
+
           <div>
+
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Email
             </label>
@@ -40,15 +136,24 @@ function Register() {
             <input
               id="email"
               type="email"
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
               placeholder="Введите email"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              autoComplete="email"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
+
           </div>
 
+
           <div>
+
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Пароль
             </label>
@@ -56,31 +161,51 @@ function Register() {
             <input
               id="password"
               type="password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
               placeholder="Введите пароль"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              autoComplete="new-password"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
+
           </div>
+
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+            disabled={loading}
+            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Зарегистрироваться
+            {loading
+              ? "Регистрация..."
+              : "Зарегистрироваться"}
           </button>
+
         </form>
 
+
         <p className="mt-6 text-center text-sm text-gray-500">
-          Уже есть аккаунт?{' '}
-          <a
-            href="/login"
+
+          Уже есть аккаунт?{" "}
+
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
             className="font-medium text-blue-600 hover:text-blue-700"
           >
             Войти
-          </a>
+          </button>
+
         </p>
+
       </div>
+
     </div>
-  )
+  );
 }
 
-export default Register
+
+export default Register;

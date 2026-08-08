@@ -3,17 +3,18 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 
+
 function Login() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setError("");
@@ -32,7 +33,9 @@ function Login() {
 
       navigate("/clients");
 
-    } catch {
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+
       setError("Неверный email или пароль");
 
     } finally {
@@ -42,13 +45,13 @@ function Login() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
 
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
 
         <div className="mb-8 text-center">
 
-          <h1 className="text-2xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900">
             CRM System
           </h1>
 
@@ -60,9 +63,9 @@ function Login() {
 
 
         {error && (
-          <p className="mb-4 text-sm text-red-600">
+          <div className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
             {error}
-          </p>
+          </div>
         )}
 
 
@@ -88,8 +91,9 @@ function Login() {
               onChange={(event) =>
                 setEmail(event.target.value)
               }
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              autoComplete="email"
               required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
           </div>
@@ -112,8 +116,9 @@ function Login() {
               onChange={(event) =>
                 setPassword(event.target.value)
               }
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              autoComplete="current-password"
               required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
           </div>
@@ -134,12 +139,13 @@ function Login() {
 
           Нет аккаунта?{" "}
 
-          <a
-            href="/register"
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
             className="font-medium text-blue-600 hover:text-blue-700"
           >
             Зарегистрироваться
-          </a>
+          </button>
 
         </p>
 
